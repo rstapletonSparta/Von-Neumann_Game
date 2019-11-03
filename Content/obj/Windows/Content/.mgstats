@@ -1,0 +1,3 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/Ross Stapleton/Engineering45b/VonNeumannGame/VonNeumannGame/Content/ball.png","C:/Users/Ross Stapleton/Engineering45b/VonNeumannGame/VonNeumannGame/Content/bin/Windows/Content/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.2299633
+"C:/Users/Ross Stapleton/Engineering45b/VonNeumannGame/VonNeumannGame/Content/White_square.png","C:/Users/Ross Stapleton/Engineering45b/VonNeumannGame/VonNeumannGame/Content/bin/Windows/Content/White_square.xnb","TextureProcessor","Texture2DContent",7769,160085,0.2471555
