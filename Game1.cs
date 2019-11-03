@@ -30,7 +30,7 @@ namespace VonNeumannGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        float chunkWidth = 200;
+        public float chunkWidth = 200;
 
         ShipClass ship;
         Map map = new Map();
@@ -55,11 +55,14 @@ namespace VonNeumannGame
         {
             // TODO: Add your initialization logic here
             Color shipColor = new Color(150, 150, 150);
-            ship = new ShipClass(0.1f, 0.3f, shipColor);
+            Vector2 screenPos = new Vector2(200,200);
 
-            ship.ScreenPosition = new Vector2(graphics.PreferredBackBufferWidth / 2,
-                graphics.PreferredBackBufferHeight / 2);
+            ship = new ShipClass(0.1f, 0.3f, shipColor);
+            ship.ScreenPosition = screenPos;
             ship.ForwardSpeed = 400f;
+
+            // will need to pass world coords too
+            loadedChunks = map.GetInitChunks(screenPos);
 
             base.Initialize();
         }
@@ -75,31 +78,24 @@ namespace VonNeumannGame
 
             ship.Texture = Content.Load<Texture2D>("White_square");
             LoadChunkContent();
-            
-            // TODO: use this.Content to load your game content here
 
+            // TODO: use this.Content to load your game content here
         }
         void LoadChunkContent()
         {
             int count = 0;
-            for (int x = -1; x <= 1; x++)
+            foreach (Chunk c in loadedChunks)
             {
-                for (int y = -1; y <= 1; y++)
+                // this is just for visial aid, remove when chunk gen is done
+                c.Texture = Content.Load<Texture2D>("White_square");
+                count++;
+                if (count % 2 == 0)
                 {
-                    Vector2 pos = new Vector2(x * chunkWidth, y * chunkWidth);
-                    Chunk newChunk = map.CreateChunk(pos);
-                    loadedChunks[count] = newChunk;
-                    newChunk.Texture = Content.Load<Texture2D>("White_square");
-                    count++;
-                    if (count % 2 == 0)
-                    {
-                        newChunk.MyColor = Color.Blue;
-                    }
-                    else
-                    {
-                        newChunk.MyColor = Color.White;
-                    }
-                    Console.WriteLine(newChunk.StartCoord + "   " + newChunk.MyColor);
+                    c.MyColor = Color.Blue;
+                }
+                else
+                {
+                    c.MyColor = Color.White;
                 }
             }
         }
@@ -129,14 +125,32 @@ namespace VonNeumannGame
 
             base.Update(gameTime);
         }
-
         public void ShipMovement(GameTime gameTime)
         {
             var kstate = Keyboard.GetState();
+            
+            Keys k = Keys.R;
+            if (kstate.IsKeyDown(Keys.Up))
+            {
+                k = Keys.Up;
+            }
+            if (kstate.IsKeyDown(Keys.Down))
+            {
+                k = Keys.Down;
+            }
+            if (kstate.IsKeyDown(Keys.Left))
+            {
+                k = Keys.Left;
+            }
+            if (kstate.IsKeyDown(Keys.Right))
+            {
+                k = Keys.Right;
+            }
             foreach (Chunk c in loadedChunks)
             {
-                c.ShipMovement(gameTime);
+                c.ShipMovement(gameTime, k);
             }
+
         }
 
         /// <summary>
@@ -150,21 +164,22 @@ namespace VonNeumannGame
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-
+            // loads the current chunks in a 3x3 grid around play
             DrawChunks();
+            // loads the players first ship
             DrawShip();
-            
             spriteBatch.End();
+
             base.Draw(gameTime);
         }
         void DrawChunks()
         {
+            // remove this when done
             foreach (Chunk c in loadedChunks)
             {
                 spriteBatch.Draw(c.Texture, c.ScreenPosition, null, c.MyColor,
-                    0f, Vector2.One, // change this back to : new Vector2(c.Texture.Width / 2, c.Texture.Height / 2)
-                    Vector2.One,
-                    SpriteEffects.None, 0f);
+                    0f, new Vector2(c.Texture.Width / 2, c.Texture.Height / 2),
+                    Vector2.One, SpriteEffects.None, 0f);
             }
         }
         void DrawShip()

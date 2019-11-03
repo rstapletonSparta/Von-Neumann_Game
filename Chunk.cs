@@ -8,7 +8,7 @@ namespace VonNeumannGame
 {
     class Chunk
     {
-        private Vector2 startCoord;
+        private Vector2 gridCoord;
         private Vector2 screenPosition;
 
         private Texture2D texture;
@@ -17,31 +17,29 @@ namespace VonNeumannGame
         public Texture2D Texture { get => texture; set => texture = value; }
         public Color MyColor { get => myColor; set => myColor = value; }
 
-        public Vector2 StartCoord { get => startCoord; }
+        public Vector2 GridCoord { get => gridCoord; }
         public Vector2 ScreenPosition { get => screenPosition; set => screenPosition = value; }
 
         private float ForwardSpeed = 50;
-        public Chunk(Vector2 startCoord)
+        public Chunk(Vector2 gridCoord)
         {
-            this.startCoord = startCoord;
-            this.screenPosition = startCoord;
+            this.gridCoord = gridCoord;
+            this.screenPosition = gridCoord;
         }
-        public void ShipMovement(GameTime gameTime)
+        public void ShipMovement(GameTime gameTime, Keys kstate)
         {
-            var kstate = Keyboard.GetState();
-            if (kstate.IsKeyDown(Keys.Up))
+            //var kstate = Keyboard.GetState();
+            if (kstate == Keys.Up)
                 screenPosition.Y += ForwardSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (kstate.IsKeyDown(Keys.Down))
+            if (kstate == Keys.Down)
                 screenPosition.Y -= ForwardSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (kstate.IsKeyDown(Keys.Left))
+            if (kstate == Keys.Left)
                 screenPosition.X += ForwardSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (kstate.IsKeyDown(Keys.Right))
+            if (kstate == Keys.Right)
                 screenPosition.X -= ForwardSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
         }
     }
 }
