@@ -35,6 +35,7 @@ namespace VonNeumannGame
         ShipClass ship;
         Map map = new Map();
         Chunk[] loadedChunks = new Chunk[9];
+        Vector2 Focus;
 
         public Game1()
         {
@@ -44,33 +45,23 @@ namespace VonNeumannGame
             this.Window.AllowUserResizing = true;
             this.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
         }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+        
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             Color shipColor = new Color(150, 150, 150);
-            Vector2 screenPos = new Vector2(200,200);
+            Vector2 screenPos = new Vector2(400,400);
 
             ship = new ShipClass(0.1f, 0.3f, shipColor);
             ship.ScreenPosition = screenPos;
+            ship.Coord = new Vector2();
             ship.ForwardSpeed = 400f;
 
             // will need to pass world coords too
             loadedChunks = map.GetInitChunks(screenPos);
-
+            Focus = map.FocusChunk(screenPos);
             base.Initialize();
         }
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -99,29 +90,25 @@ namespace VonNeumannGame
                 }
             }
         }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
-
-            // TODO: Add your update logic here
+            }
 
             ShipMovement(gameTime);
+
+            Vector2 checkFocus = map.FocusChunk(ship.ScreenPosition);
+
+            if (checkFocus != Focus)
+            {
+                map.GetInitChunks(ship.ScreenPosition);
+            }
 
             base.Update(gameTime);
         }
@@ -178,7 +165,7 @@ namespace VonNeumannGame
             foreach (Chunk c in loadedChunks)
             {
                 spriteBatch.Draw(c.Texture, c.ScreenPosition, null, c.MyColor,
-                    0f, new Vector2(c.Texture.Width / 2, c.Texture.Height / 2),
+                    0f, Vector2.Zero,
                     Vector2.One, SpriteEffects.None, 0f);
             }
         }

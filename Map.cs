@@ -9,34 +9,50 @@ namespace VonNeumannGame
     class Map
     {
         Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
+        private Vector2 focusChunk;
+        int spacing = 200; // this is from chunkWidth in game1
+
         
-        public Chunk CreateChunk(Vector2 i)
+        public Chunk CheckOrCreateChunk(Vector2 pos)
         {
-            Chunk n = new Chunk(i);
-            chunks.Add(i,n);
-            return n;
+            if (chunks.ContainsKey(pos))
+            {
+                return chunks[pos];
+            }
+            else
+            {
+                Chunk n = new Chunk(pos);
+                chunks.Add(pos, n);
+                return n;
+            }
         }
         public Chunk[] GetInitChunks(Vector2 shipPos)
         {
             // this should be my run time chunk check too
             Chunk[] ch = new Chunk[9];
-            int spacing = 200; // this is from chunkWidth in game1
-            float xModded = shipPos.X % spacing;
-            float yModded = shipPos.Y % spacing;
-
+            
             int count = 0;
             for (int x = -1; x <= 1; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    Vector2 t = new Vector2((shipPos.X - xModded) + (x * spacing), (shipPos.Y - yModded) + (y * spacing));
-                    Chunk newChunk = new Chunk(t); // this should get get or create
+                    Vector2 pos = FocusChunk(shipPos);
+                    pos.X = pos.X + (x * spacing);
+                    pos.Y = pos.Y + (y * spacing);
+                    Chunk newChunk = CheckOrCreateChunk(pos);
                     ch[count] = newChunk;
                     count++;
-                    Console.WriteLine(t);
+                    Console.WriteLine(pos);
                 }
             }
-            return chunks;
+            return ch;
+        }
+        public Vector2 FocusChunk(Vector2 shipPos)
+        {
+            float xModded = shipPos.X % spacing;
+            float yModded = shipPos.Y % spacing;
+            Vector2 t = new Vector2(shipPos.X - xModded, shipPos.Y - yModded);
+            return t;
         }
     }
 }
